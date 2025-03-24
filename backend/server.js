@@ -1,23 +1,32 @@
 import express from 'express';
-import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import sequelize from './config/db.js';
+import User from './models/User.js'; // at the top
 
 dotenv.config();
 const app = express();
 
+// Middlewares
 app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 app.use(express.json());
 
+// Routes (we'll add auth routes soon)
 app.get('/', (req, res) => {
   res.send('API is running...');
 });
 
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log('MongoDB connected');
-    app.listen(process.env.PORT, () =>
-      console.log(`Server running on port ${process.env.PORT}`)
-    );
-  })
-  .catch((err) => console.log('Mongo error', err));
+// Start server after DB connection
+try {
+  await sequelize.authenticate();
+  console.log('✅ MySQL connected');
+
+  await sequelize.sync(); // sync all models
+  console.log('📦 Models synced');
+
+  app.listen(process.env.PORT, () => {
+    console.log(`🚀 Server running on port ${process.env.PORT}`);
+  });
+} catch (err) {
+  console.error('❌ DB connection error:', err);
+}
