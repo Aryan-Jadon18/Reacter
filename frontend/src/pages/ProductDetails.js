@@ -1,22 +1,28 @@
 import { useParams } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { useState } from 'react';
+import { useFavorites } from '../context/FavoritesContext';
 import products from '../data/products';
-
 
 function ProductDetails() {
   const { id } = useParams();
   const product = products.find(p => p.id === id);
 
   const { addToCart } = useCart();
-  const [favorited, setFavorited] = useState(false);
-
-  const handleFavorite = () => {
-    setFavorited(!favorited);
-    alert(`${product.name} ${!favorited ? 'added to' : 'removed from'} favorites`);
-  };
+  const { favorites, addToFavorites, removeFromFavorites } = useFavorites();
 
   if (!product) return <h2 style={{ padding: '30px' }}>Product not found</h2>;
+
+  const isFavorited = favorites.some(p => p.id === product.id);
+
+  const handleFavorite = () => {
+    if (isFavorited) {
+      removeFromFavorites(product.id);
+      alert(`${product.name} removed from favorites`);
+    } else {
+      addToFavorites(product);
+      alert(`${product.name} added to favorites`);
+    }
+  };
 
   return (
     <div style={styles.container}>
@@ -28,7 +34,7 @@ function ProductDetails() {
         <div style={styles.buttons}>
           <button onClick={() => addToCart(product)} style={styles.cartBtn}>Add to Cart</button>
           <button onClick={handleFavorite} style={styles.favBtn}>
-            {favorited ? '❤️ Favorited' : '♡ Favorite'}
+            {isFavorited ? '❤️ Favorited' : '♡ Favorite'}
           </button>
         </div>
       </div>

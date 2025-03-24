@@ -9,6 +9,7 @@ function Header() {
           <li><Link to="/" style={styles.link}>Home</Link></li>
           <li><Link to="/products" style={styles.link}>Products</Link></li>
           <li><Link to="/cart" style={styles.link}>Cart</Link></li>
+          <li><Link to="/favorites" style={styles.link}>Favorites</Link></li>
         </ul>
       </nav>
     </header>
