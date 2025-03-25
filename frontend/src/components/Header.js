@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import AccountDropdown from './AccountDropdown';
 
 function Header() {
   const { user, logout } = useAuth();
@@ -13,10 +14,7 @@ function Header() {
           <li><Link to="/cart" style={styles.link}>Cart</Link></li>
 
           {user ? (
-            <>
-              <li style={styles.link}>Hi, {user.name}</li>
-              <li><button onClick={logout} style={styles.logoutBtn}>Logout</button></li>
-            </>
+            <li><AccountDropdown /></li>
           ) : (
             <>
               <li><Link to="/login" style={styles.link}>Login</Link></li>

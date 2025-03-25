@@ -45,3 +45,22 @@ export const getMe = async (req, res) => {
   const { id, name, email } = req.user;
   res.json({ id, name, email });
 };
+
+export const becomeSeller = async (req, res) => {
+  const user = req.user;
+
+  if (user.role === 'seller') {
+    return res.status(400).json({ message: 'Already a seller' });
+  }
+
+  user.role = 'seller';
+  await user.save();
+
+  res.json({
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    message: 'You are now a seller!'
+  });
+};
