@@ -1,27 +1,24 @@
 import { useParams } from 'react-router-dom';
-import { useCart } from '../context/CartContext';
-import { useFavorites } from '../context/FavoritesContext';
 import products from '../data/products';
+import { useFavorites } from '../context/FavoritesContext';
+import { useAuth } from '../context/AuthContext';
 
 function ProductDetails() {
   const { id } = useParams();
   const product = products.find(p => p.id === id);
-
-  const { addToCart } = useCart();
-  const { favorites, addToFavorites, removeFromFavorites } = useFavorites();
+  const { user } = useAuth();
+  const { favorites, addFavorite, removeFavorite } = useFavorites();
 
   if (!product) return <h2 style={{ padding: '30px' }}>Product not found</h2>;
 
-  const isFavorited = favorites.some(p => p.id === product.id);
+  const isFavorited = favorites.some(f => f.productId === product.id);
+  const favorite = favorites.find(f => f.productId === product.id);
 
-  const handleFavorite = () => {
-    if (isFavorited) {
-      removeFromFavorites(product.id);
-      alert(`${product.name} removed from favorites`);
-    } else {
-      addToFavorites(product);
-      alert(`${product.name} added to favorites`);
-    }
+  const toggleFavorite = () => {
+    if (!user) return alert('Please login to favorite products');
+
+    if (isFavorited) removeFavorite(favorite.id);
+    else addFavorite(product);
   };
 
   return (
@@ -32,15 +29,17 @@ function ProductDetails() {
         <p style={styles.price}>₹{product.price}</p>
         <p>{product.description}</p>
         <div style={styles.buttons}>
-          <button onClick={() => addToCart(product)} style={styles.cartBtn}>Add to Cart</button>
-          <button onClick={handleFavorite} style={styles.favBtn}>
-            {isFavorited ? '❤️ Favorited' : '♡ Favorite'}
+          <button style={styles.cartBtn}>Add to Cart</button>
+          <button onClick={toggleFavorite} style={styles.favBtn}>
+            {isFavorited ? '❤️ Remove Favorite' : '♡ Add to Favorites'}
           </button>
         </div>
       </div>
     </div>
   );
 }
+
+
 
 const styles = {
   container: {

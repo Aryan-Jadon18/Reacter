@@ -2,16 +2,23 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import sequelize from './config/db.js';
-import User from './models/User.js'; // at the top
+import User from './models/User.js';
+import authRoutes from './routes/authRoutes.js'; // ✅ added
+import Favorite from './models/Favorite.js';
+import favoriteRoutes from './routes/favoriteRoutes.js';
+
 
 dotenv.config();
 const app = express();
 
-// Middlewares
+// Middleware
 app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 app.use(express.json());
 
-// Routes (we'll add auth routes soon)
+// Routes
+app.use('/api/auth', authRoutes); // ✅ added
+app.use('/api/favorites', favoriteRoutes);
+
 app.get('/', (req, res) => {
   res.send('API is running...');
 });

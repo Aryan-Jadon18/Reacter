@@ -1,7 +1,7 @@
 import { useState } from 'react';
-// import API from '../api/axios'; // will use once backend is up
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import API from '../api/axios';
 
 function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -18,14 +18,25 @@ function Login() {
     setMessage('Logging in...');
 
     try {
-      // const res = await API.post('/auth/login', form);
-      // login(res.data.user);
-      login({ name: 'Aryan (mock user)', email: form.email }); // mock login
+      const res = await API.post('/auth/login', form);
+      const { token } = res.data;
+
+      // Save token in localStorage
+      localStorage.setItem('token', token);
+
+      // Get user info via /me
+      const me = await API.get('/auth/me', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      login(me.data); // sets user in context
       setMessage('Login successful!');
       navigate('/');
     } catch (err) {
       console.error(err);
-      setMessage('Login failed.');
+      setMessage('Invalid credentials');
     }
   };
 
