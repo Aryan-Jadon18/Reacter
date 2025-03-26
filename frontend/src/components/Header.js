@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import AccountDropdown from './AccountDropdown';
 
 function Header() {
-  const { user, logout } = useAuth();
+  const { user} = useAuth();
 
   return (
     <header style={styles.header}>

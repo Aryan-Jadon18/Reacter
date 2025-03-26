@@ -1,5 +1,6 @@
 import { useState } from 'react';
-//import API from '../api/axios'; // We'll use this when backend is live
+import { useNavigate } from 'react-router-dom';
+import API from '../api/axios';
 
 function Register() {
   const [form, setForm] = useState({
@@ -9,6 +10,7 @@ function Register() {
   });
 
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -19,12 +21,9 @@ function Register() {
     setMessage("Registering...");
 
     try {
-      // This will be enabled after backend is live
-      // const res = await API.post('/auth/register', form);
-      // setMessage("Registered successfully!");
-
-      console.log('Register form submitted:', form);
-      setMessage("Pretend register successful 😄");
+      await API.post('/auth/register', form);
+      setMessage("Registered successfully! Redirecting...");
+      setTimeout(() => navigate('/login'), 1500);
     } catch (err) {
       console.error(err);
       setMessage("Registration failed.");

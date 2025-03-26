@@ -30,15 +30,25 @@ function SellerProductForm({ product, onSave }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
+    // Future: Upload to Cloud if image is a File
+    // if (form._imageFile) {
+    //   const url = await uploadImage(form._imageFile);
+    //   form.image = url;
+    // }
+  
+    const payload = { ...form };
+    delete payload._imageFile;
+  
     if (product) {
-      await API.put(`/products/${product.id}`, form);
+      await API.put(`/products/${product.id}`, payload);
     } else {
-      await API.post('/products', form);
+      await API.post('/products', payload);
     }
-
+  
     onSave();
   };
+  
 
   return (
     <form onSubmit={handleSubmit} style={styles.form}>
@@ -46,7 +56,21 @@ function SellerProductForm({ product, onSave }) {
       <input name="name" placeholder="Product Name" value={form.name} onChange={handleChange} required />
       <textarea name="description" placeholder="Description" value={form.description} onChange={handleChange} />
       <input name="price" placeholder="Price (₹)" type="number" value={form.price} onChange={handleChange} required />
-      <input name="image" placeholder="Image URL" value={form.image} onChange={handleChange} />
+      <input
+  type="file"
+  accept="image/*"
+  onChange={(e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const localUrl = URL.createObjectURL(file); // preview
+      setForm({ ...form, image: localUrl, _imageFile: file }); // save raw file too
+    }
+  }}
+/>
+{form.image && (
+  <img src={form.image} alt="Preview" style={{ height: '100px', marginTop: '10px', borderRadius: '6px' }} />
+)}
+
       <input name="accountNumber" placeholder="Account Number for Payments" value={form.accountNumber} onChange={handleChange} />
 
       <button type="submit" style={styles.button}>
