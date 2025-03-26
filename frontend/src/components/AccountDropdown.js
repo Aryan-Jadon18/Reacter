@@ -16,14 +16,13 @@ function AccountDropdown() {
     try {
       const res = await API.put('/auth/become-seller');
       alert(res.data.message);
-      logout();
-      window.location.reload();
+      window.location.reload(); // fetches updated role from /auth/me
     } catch (err) {
       alert('Error becoming seller');
     }
   };
 
-  // ✅ Detect outside click
+  // Close on outside click
   useEffect(() => {
     function handleClickOutside(e) {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -47,13 +46,13 @@ function AccountDropdown() {
         <div style={styles.dropdown}>
           <p><strong>{user.name}</strong></p>
           <p style={{ fontSize: '0.9rem', color: '#666' }}>{user.email}</p>
-          <p>Role: {user.role}</p>
+          <p>Role: <strong>{user.role}</strong></p>
 
           {user.role === 'buyer' ? (
             <button onClick={becomeSeller} style={styles.button}>Become a Seller</button>
           ) : (
             <button onClick={() => navigate('/seller/dashboard')} style={styles.button}>
-              Seller Dashboard
+              Go to Seller Dashboard
             </button>
           )}
 
@@ -108,6 +107,3 @@ const styles = {
 };
 
 export default AccountDropdown;
-  
- // In the above code, we have a dropdown menu that shows the user’s name, email, and role. If the user is a buyer, they can click on the “Become a Seller” button to become a seller. If the user is already a seller, they can click on the “Seller Dashboard” button to navigate to the seller dashboard. The “Logout” button is used to log out the user. 
- // Now, let’s add the  AccountDropdown  component to the  Navbar  component.
