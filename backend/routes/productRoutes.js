@@ -1,19 +1,21 @@
 import express from 'express';
+import { protect } from '../middleware/authMiddleware.js';
 import {
+  getAllProducts,
   getMyProducts,
   createProduct,
   updateProduct,
-  deleteProduct
+  deleteProduct,
+  getProductById
 } from '../controllers/productController.js';
-import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-router.use(protect);
-
-router.get('/my-products', getMyProducts);
-router.post('/', createProduct);
-router.put('/:id', updateProduct);
-router.delete('/:id', deleteProduct);
+router.get('/', getAllProducts); // ✅ THIS ONE
+router.get('/my-products', protect, getMyProducts);
+router.get('/:id', getProductById);
+router.post('/', protect, createProduct);
+router.put('/:id', protect, updateProduct);
+router.delete('/:id', protect, deleteProduct);
 
 export default router;

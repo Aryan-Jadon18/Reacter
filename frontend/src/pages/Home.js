@@ -1,10 +1,20 @@
 import HeroBanner from '../components/HeroBanner';
 import ProductCard from '../components/ProductCard';
-import products from '../data/products';
-
+import { useEffect, useState } from 'react';
+import API from '../api/axios';
 
 function Home() {
-  const featured = products.slice(3, 6); // show 3 featured products (can tweak)
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    const res = await API.get('/products');
+    setProducts(res.data);
+  };
+
   return (
     <div>
       <HeroBanner />
@@ -12,7 +22,7 @@ function Home() {
       <section style={styles.featured}>
         <h2>🔥 Featured Deals</h2>
         <div style={styles.grid}>
-          {featured.map(product => (
+          {products.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>

@@ -1,25 +1,69 @@
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import products from '../data/products';
-import { useFavorites } from '../context/FavoritesContext';
+import API from '../api/axios';
 import { useAuth } from '../context/AuthContext';
+import { useFavorites } from '../context/FavoritesContext';
+import { useCart } from '../context/CartContext'; // Assuming you have a cart context
 
 function ProductDetails() {
   const { id } = useParams();
-  const product = products.find(p => p.id === id);
+  const [product, setProduct] = useState(null);
+  const [favorited, setFavorited] = useState(false);
+  const [favoriteId, setFavoriteId] = useState(null);
+
   const { user } = useAuth();
-  const { favorites, addFavorite, removeFavorite } = useFavorites();
+  const { addToCart } = useCart();
+  const { favorites } = useFavorites();
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const res = await API.get(`/products/${id}`);
+        setProduct(res.data);
+      } catch (err) {
+        console.error('Error loading product:', err);
+      }
+    };
+
+    fetchProduct();
+  }, [id]);
+
+  useEffect(() => {
+    if (user && product?.id) {
+      API.get('/favorites')
+        .then(res => {
+          const match = res.data.find(f => f.productId === product.id);
+          if (match) {
+            setFavorited(true);
+            setFavoriteId(match.id);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [user, product]);
+  
+
+  const toggleFavorite = async () => {
+    try {
+      if (!favorited) {
+        const res = await API.post('/favorites', { productId: product.id });
+        setFavoriteId(res.data.id);
+        setFavorited(true);
+      } else {
+        await API.delete(`/favorites/${favoriteId}`);
+        setFavorited(false);
+        setFavoriteId(null);
+      }
+    } catch (err) {
+      alert('Login to favorite products');
+    }
+  };
+
+  const handleAddToCart = () => {
+    if (product) addToCart(product);
+  };
 
   if (!product) return <h2 style={{ padding: '30px' }}>Product not found</h2>;
-
-  const isFavorited = favorites.some(f => f.productId === product.id);
-  const favorite = favorites.find(f => f.productId === product.id);
-
-  const toggleFavorite = () => {
-    if (!user) return alert('Please login to favorite products');
-
-    if (isFavorited) removeFavorite(favorite.id);
-    else addFavorite(product);
-  };
 
   return (
     <div style={styles.container}>
@@ -28,18 +72,19 @@ function ProductDetails() {
         <h2>{product.name}</h2>
         <p style={styles.price}>₹{product.price}</p>
         <p>{product.description}</p>
+
         <div style={styles.buttons}>
-          <button style={styles.cartBtn}>Add to Cart</button>
+          <button onClick={handleAddToCart} style={styles.cartBtn}>
+            Add to Cart
+          </button>
           <button onClick={toggleFavorite} style={styles.favBtn}>
-            {isFavorited ? '❤️ Remove Favorite' : '♡ Add to Favorites'}
+            {favorited ? '❤️ Remove Favorite' : '♡ Add to Favorites'}
           </button>
         </div>
       </div>
     </div>
   );
 }
-
-
 
 const styles = {
   container: {
