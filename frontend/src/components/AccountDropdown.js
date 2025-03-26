@@ -10,6 +10,8 @@ function AccountDropdown() {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
 
+  console.log("🔎 AuthContext user:", user);
+
   const toggleDropdown = () => setOpen(prev => !prev);
 
   const becomeSeller = async () => {

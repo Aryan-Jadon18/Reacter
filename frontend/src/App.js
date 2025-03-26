@@ -9,6 +9,7 @@ import Favorites from './pages/Favorites';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ProtectedRoute from './components/ProtectedRoute';
+import SellerDashboard from './pages/SellerDashboard';
 
 function App() {
   return (
@@ -34,6 +35,14 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+  path="/seller/dashboard"
+  element={
+    <ProtectedRoute>
+      <SellerDashboard />
+    </ProtectedRoute>
+  }
+/>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
       </Routes>

@@ -42,9 +42,14 @@ export const loginUser = async (req, res) => {
 };
 
 export const getMe = async (req, res) => {
-  const { id, name, email } = req.user;
-  res.json({ id, name, email });
+  res.json({
+    id: req.user.id,
+    name: req.user.name,
+    email: req.user.email,
+    role: req.user.role, // ✅ now includes role
+  });
 };
+
 
 export const becomeSeller = async (req, res) => {
   const user = req.user;

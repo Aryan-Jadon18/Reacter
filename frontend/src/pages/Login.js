@@ -18,20 +18,18 @@ function Login() {
     setMessage('Logging in...');
 
     try {
+      // Step 1: Login and get token
       const res = await API.post('/auth/login', form);
       const { token } = res.data;
-
-      // Save token in localStorage
       localStorage.setItem('token', token);
 
-      // Get user info via /me
-      const me = await API.get('/auth/me', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      // Step 2: Fetch full user info including role
+      const me = await API.get('/auth/me');
+      console.log('Logged in user:', me.data); // ✅ Optional debug
 
-      login(me.data); // sets user in context
+      // Step 3: Save in context
+      login(me.data);
+
       setMessage('Login successful!');
       navigate('/');
     } catch (err) {

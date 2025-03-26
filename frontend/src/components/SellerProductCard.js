@@ -12,44 +12,64 @@ function SellerProductCard({ product, onEdit, onDelete }) {
     <div style={styles.card}>
       <img src={product.image} alt={product.name} style={styles.image} />
       <h4>{product.name}</h4>
-      <p>₹{product.price}</p>
-      <button onClick={onEdit} style={styles.edit}>Edit</button>
-      <button onClick={handleDelete} style={styles.delete}>Delete</button>
+      <p style={styles.price}>₹{product.price}</p>
+      <p style={styles.smallText}>Payout to: <strong>{product.accountNumber}</strong></p>
+
+      <div style={styles.btns}>
+        <button onClick={onEdit} style={styles.edit}>Edit</button>
+        <button onClick={handleDelete} style={styles.delete}>Delete</button>
+      </div>
     </div>
   );
 }
 
 const styles = {
   card: {
-    width: '200px',
+    width: '220px',
     padding: '15px',
     border: '1px solid #ccc',
     borderRadius: '8px',
-    textAlign: 'center'
+    textAlign: 'center',
+    backgroundColor: '#fff',
   },
   image: {
     width: '100%',
-    height: '120px',
+    height: '140px',
     objectFit: 'cover',
-    borderRadius: '4px'
+    borderRadius: '4px',
+    marginBottom: '10px',
+  },
+  price: {
+    fontSize: '1.1rem',
+    fontWeight: 'bold',
+    color: '#222',
+  },
+  smallText: {
+    fontSize: '0.85rem',
+    color: '#555',
+    marginBottom: '10px',
+  },
+  btns: {
+    display: 'flex',
+    justifyContent: 'center',
+    gap: '10px',
+    marginTop: '10px',
   },
   edit: {
-    marginTop: '10px',
-    marginRight: '8px',
     backgroundColor: '#444',
     color: '#fff',
-    border: 'none',
     padding: '6px 10px',
+    border: 'none',
     borderRadius: '4px',
-    cursor: 'pointer'
+    cursor: 'pointer',
   },
   delete: {
     backgroundColor: '#ff4444',
     color: '#fff',
-    border: 'none',
     padding: '6px 10px',
+    border: 'none',
     borderRadius: '4px',
-    cursor: 'pointer'
+    cursor: 'pointer',
   }
 };
 
