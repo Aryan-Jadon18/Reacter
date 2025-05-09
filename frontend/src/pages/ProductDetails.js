@@ -1,28 +1,69 @@
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useCart } from '../context/CartContext';
+import API from '../api/axios';
+import { useAuth } from '../context/AuthContext';
 import { useFavorites } from '../context/FavoritesContext';
-import products from '../data/products';
+import { useCart } from '../context/CartContext'; // Assuming you have a cart context
 
 function ProductDetails() {
   const { id } = useParams();
-  const product = products.find(p => p.id === id);
+  const [product, setProduct] = useState(null);
+  const [favorited, setFavorited] = useState(false);
+  const [favoriteId, setFavoriteId] = useState(null);
 
+  const { user } = useAuth();
   const { addToCart } = useCart();
-  const { favorites, addToFavorites, removeFromFavorites } = useFavorites();
+  const { favorites } = useFavorites();
 
-  if (!product) return <h2 style={{ padding: '30px' }}>Product not found</h2>;
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const res = await API.get(`/products/${id}`);
+        setProduct(res.data);
+      } catch (err) {
+        console.error('Error loading product:', err);
+      }
+    };
 
-  const isFavorited = favorites.some(p => p.id === product.id);
+    fetchProduct();
+  }, [id]);
 
-  const handleFavorite = () => {
-    if (isFavorited) {
-      removeFromFavorites(product.id);
-      alert(`${product.name} removed from favorites`);
-    } else {
-      addToFavorites(product);
-      alert(`${product.name} added to favorites`);
+  useEffect(() => {
+    if (user && product?.id) {
+      API.get('/favorites')
+        .then(res => {
+          const match = res.data.find(f => f.productId === product.id);
+          if (match) {
+            setFavorited(true);
+            setFavoriteId(match.id);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [user, product]);
+  
+
+  const toggleFavorite = async () => {
+    try {
+      if (!favorited) {
+        const res = await API.post('/favorites', { productId: product.id });
+        setFavoriteId(res.data.id);
+        setFavorited(true);
+      } else {
+        await API.delete(`/favorites/${favoriteId}`);
+        setFavorited(false);
+        setFavoriteId(null);
+      }
+    } catch (err) {
+      alert('Login to favorite products');
     }
   };
+
+  const handleAddToCart = () => {
+    if (product) addToCart(product);
+  };
+
+  if (!product) return <h2 style={{ padding: '30px' }}>Product not found</h2>;
 
   return (
     <div style={styles.container}>
@@ -31,10 +72,13 @@ function ProductDetails() {
         <h2>{product.name}</h2>
         <p style={styles.price}>₹{product.price}</p>
         <p>{product.description}</p>
+
         <div style={styles.buttons}>
-          <button onClick={() => addToCart(product)} style={styles.cartBtn}>Add to Cart</button>
-          <button onClick={handleFavorite} style={styles.favBtn}>
-            {isFavorited ? '❤️ Favorited' : '♡ Favorite'}
+          <button onClick={handleAddToCart} style={styles.cartBtn}>
+            Add to Cart
+          </button>
+          <button onClick={toggleFavorite} style={styles.favBtn}>
+            {favorited ? '❤️ Remove Favorite' : '♡ Add to Favorites'}
           </button>
         </div>
       </div>

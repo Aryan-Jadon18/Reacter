@@ -1,27 +1,38 @@
+import { useEffect, useState } from 'react';
+import API from '../api/axios';
 import ProductCard from '../components/ProductCard';
-import products from '../data/products';
-
 
 function ProductList() {
-  return (
-    <div style={styles.container}>
-      {products.map(product => (
-  <ProductCard key={product.id} product={product} />
-))}
+  const [products, setProducts] = useState([]);
 
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    const res = await API.get('/products');
+    setProducts(res.data);
+  };
+
+  return (
+    <div style={{ padding: '40px' }}>
+      <h2>🛍️ All Products</h2>
+      <div style={styles.grid}>
+        {products.map((product) => (
+          <ProductCard key={product.id} product={product} />
+        ))}
+      </div>
     </div>
   );
 }
 
 const styles = {
-  container: {
+  grid: {
+    marginTop: '20px',
     display: 'flex',
-    flexWrap: 'wrap',
     gap: '20px',
+    flexWrap: 'wrap',
     justifyContent: 'center',
-    padding: '30px',
-    backgroundColor: '#f9f9f9',
-    minHeight: '100vh',
   }
 };
 
