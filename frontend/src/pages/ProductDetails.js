@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import API from '../api/axios';
 import { useAuth } from '../context/AuthContext';
-import { useFavorites } from '../context/FavoritesContext';
 import { useCart } from '../context/CartContext'; // Assuming you have a cart context
 
 function ProductDetails() {
@@ -13,7 +12,6 @@ function ProductDetails() {
 
   const { user } = useAuth();
   const { addToCart } = useCart();
-  const { favorites } = useFavorites();
 
   useEffect(() => {
     const fetchProduct = async () => {
